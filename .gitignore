@@ -1,0 +1,10 @@
+# Gradle files
+.gradle/
+build/
+.idea/
+XYZReader/build/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+*.iml
