@@ -8,11 +8,11 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.RemoteException;
-import android.text.format.Time;
 import android.util.Log;
 
 import com.example.xyzreader.api.ArticlesApiClientService;
 import com.example.xyzreader.data.model.Article;
+import com.example.xyzreader.utils.Debug;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,7 +35,6 @@ public class UpdaterService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Time time = new Time();
 
         ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
@@ -44,7 +43,7 @@ public class UpdaterService extends IntentService {
             return;
         }
 
-        sendStickyBroadcast(
+        sendBroadcast(
                 new Intent(BROADCAST_ACTION_STATE_CHANGE).putExtra(EXTRA_REFRESHING, true));
 
         // Don't even inspect the intent, we only do one thing, and that's fetch content.
@@ -66,13 +65,11 @@ public class UpdaterService extends IntentService {
             }
             getContentResolver().applyBatch(ItemsContract.CONTENT_AUTHORITY, cpo);
 
-        } catch (RemoteException | OperationApplicationException e) {
-            Log.e(TAG, "Error updating content.", e);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (RemoteException | OperationApplicationException | IOException e) {
+            Debug.e("Error updating content." + e.getLocalizedMessage(), false);
         }
 
-        sendStickyBroadcast(
+        sendBroadcast(
                 new Intent(BROADCAST_ACTION_STATE_CHANGE).putExtra(EXTRA_REFRESHING, false));
     }
 }
