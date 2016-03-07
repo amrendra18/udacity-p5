@@ -16,7 +16,6 @@
 -->
 
 <resources>
-    <color name="photo_placeholder">#ccc</color>
     <!--
     Color List taken from
     https://gist.github.com/kalehv/bae765c756e94455ed88
@@ -311,4 +310,6 @@
     <color name="theme_primary_dark">@color/colorPrimaryDark</color>
     <color name="theme_accent">@color/colorAccent</color>
     <color name="ltgray">@color/colorSecondaryText</color>
+
+    <color name="photo_placeholder">@color/orange_50</color>
 </resources>
