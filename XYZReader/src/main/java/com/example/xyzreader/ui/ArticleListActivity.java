@@ -7,12 +7,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.graphics.Palette;
-import android.support.v7.graphics.Palette.Swatch;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -23,13 +20,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
 import com.example.xyzreader.data.UpdaterService;
 import com.example.xyzreader.ui.image.DynamicHeightImageView;
+import com.example.xyzreader.utils.Debug;
 
 /**
  * An activity representing a list of Articles. This activity has different presentations for
@@ -37,9 +33,9 @@ import com.example.xyzreader.ui.image.DynamicHeightImageView;
  * touched, lead to a {@link ArticleDetailActivity} representing item details. On tablets, the
  * activity presents a grid of items as cards.
  */
-public class ArticleListActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+public class ArticleListActivity extends AppCompatActivity {
 
+    private static final int CURSOR_LOADER = 101;
     private Toolbar mToolbar;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
@@ -52,16 +48,20 @@ public class ArticleListActivity extends AppCompatActivity implements
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimaryDark);
+        mSwipeRefreshLayout.setProgressViewOffset(true, 200, 500);
+        mSwipeRefreshLayout.setEnabled(false);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        getLoaderManager().initLoader(0, null, this);
 
         if (savedInstanceState == null) {
+            Debug.e("App is starting for the first time, so calling refresh()", false);
             refresh();
         }
     }
 
     private void refresh() {
+        Debug.e("Refresh Called", false);
         startService(new Intent(this, UpdaterService.class));
     }
 
@@ -76,6 +76,12 @@ public class ArticleListActivity extends AppCompatActivity implements
     protected void onStop() {
         super.onStop();
         unregisterReceiver(mRefreshingReceiver);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initCursorLoader();
     }
 
     private boolean mIsRefreshing = false;
@@ -94,26 +100,57 @@ public class ArticleListActivity extends AppCompatActivity implements
         mSwipeRefreshLayout.setRefreshing(mIsRefreshing);
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return ArticleLoader.newAllArticlesInstance(this);
+    private void showRefreshing() {
+        if (!mIsRefreshing) {
+            mIsRefreshing = true;
+            updateRefreshingUI();
+        }
     }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        Adapter adapter = new Adapter(cursor);
-        adapter.setHasStableIds(true);
-        mRecyclerView.setAdapter(adapter);
-        int columnCount = getResources().getInteger(R.integer.list_column_count);
-        StaggeredGridLayoutManager sglm =
-                new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
-        mRecyclerView.setLayoutManager(sglm);
+    private void hideRefreshing() {
+        if (mIsRefreshing) {
+            mIsRefreshing = false;
+            updateRefreshingUI();
+        }
     }
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        mRecyclerView.setAdapter(null);
+    private void initCursorLoader() {
+        if (getLoaderManager().getLoader(CURSOR_LOADER) == null) {
+            getLoaderManager().initLoader(CURSOR_LOADER, null, cursorLoaderCallbacks);
+        } else {
+            getLoaderManager().restartLoader(CURSOR_LOADER, null, cursorLoaderCallbacks);
+        }
     }
+
+    private LoaderManager.LoaderCallbacks<Cursor> cursorLoaderCallbacks
+            = new LoaderManager.LoaderCallbacks<Cursor>() {
+
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            Debug.c();
+            showRefreshing();
+            return ArticleLoader.newAllArticlesInstance(ArticleListActivity.this);
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+            Debug.c();
+            Adapter adapter = new Adapter(cursor);
+            adapter.setHasStableIds(true);
+            mRecyclerView.setAdapter(adapter);
+            int columnCount = getResources().getInteger(R.integer.list_column_count);
+            StaggeredGridLayoutManager sglm =
+                    new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
+            mRecyclerView.setLayoutManager(sglm);
+            hideRefreshing();
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+            Debug.c();
+            mRecyclerView.setAdapter(null);
+        }
+    };
 
     private class Adapter extends RecyclerView.Adapter<ViewHolder> {
         private Cursor mCursor;
@@ -157,16 +194,18 @@ public class ArticleListActivity extends AppCompatActivity implements
             holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
 
             Glide.with(ArticleListActivity.this)
-                    .load(mCursor.getString(ArticleLoader.Query.THUMB_URL)).asBitmap()
+                    .load(mCursor.getString(ArticleLoader.Query.THUMB_URL))/*.asBitmap()
                     //.placeholder(R.mipmap.ic_launcher)
                     .listener(new RequestListener<String, Bitmap>() {
                         @Override
                         public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
+                            Debug.c();
                             return false;
                         }
 
                         @Override
                         public boolean onResourceReady(final Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            Debug.c();
                             if (resource != null) {
                                 Palette.from(resource).generate(
                                         new Palette.PaletteAsyncListener() {
@@ -191,7 +230,7 @@ public class ArticleListActivity extends AppCompatActivity implements
                             }
                             return false;
                         }
-                    })
+                    })*/
                     .into(holder.thumbnailView);
 
         }

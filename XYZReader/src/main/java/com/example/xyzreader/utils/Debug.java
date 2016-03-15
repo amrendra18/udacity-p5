@@ -22,7 +22,7 @@ import java.util.Map;
  * Created by Amrendra Kumar on 27/01/16.
  */
 public class Debug {
-    private static final Boolean DEBUG = false;
+    private static final Boolean DEBUG = true;
     private static final String TAG = "bdebug";
 
     private static String getMsg(String msg) {
