@@ -7,9 +7,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -20,6 +22,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
@@ -194,7 +198,7 @@ public class ArticleListActivity extends AppCompatActivity {
             holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
 
             Glide.with(ArticleListActivity.this)
-                    .load(mCursor.getString(ArticleLoader.Query.THUMB_URL))/*.asBitmap()
+                    .load(mCursor.getString(ArticleLoader.Query.THUMB_URL)).asBitmap()
                     //.placeholder(R.mipmap.ic_launcher)
                     .listener(new RequestListener<String, Bitmap>() {
                         @Override
@@ -211,9 +215,9 @@ public class ArticleListActivity extends AppCompatActivity {
                                         new Palette.PaletteAsyncListener() {
                                             @Override
                                             public void onGenerated(Palette palette) {
-                                                Swatch darkVibrantSwatch = palette.getDarkVibrantSwatch();
-                                                Swatch darkMutedSwatch = palette.getDarkMutedSwatch();
-                                                Swatch backgroundAndContentColors = darkVibrantSwatch;
+                                                Palette.Swatch darkVibrantSwatch = palette.getDarkVibrantSwatch();
+                                                Palette.Swatch darkMutedSwatch = palette.getDarkMutedSwatch();
+                                                Palette.Swatch backgroundAndContentColors = darkVibrantSwatch;
                                                 if (backgroundAndContentColors == null) {
                                                     backgroundAndContentColors = darkMutedSwatch;
                                                 }
@@ -230,7 +234,8 @@ public class ArticleListActivity extends AppCompatActivity {
                             }
                             return false;
                         }
-                    })*/
+                    })
+                    .dontAnimate()
                     .into(holder.thumbnailView);
 
         }
