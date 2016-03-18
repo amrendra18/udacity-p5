@@ -62,7 +62,7 @@ public class ArticleDetailFragment extends Fragment implements
 
     LinearLayout metaBarLinearLayout;
     CollapsingToolbarLayout mCollapsingToolbar;
-    TitleLineView mTitleLine;
+    LinearLayout mTitleLine;
     AppBarLayout appBarLayout;
 
     /**
@@ -116,7 +116,7 @@ public class ArticleDetailFragment extends Fragment implements
         appBarLayout = (AppBarLayout) mRootView.findViewById(R.id.app_bar_layout);
         appBarLayout.addOnOffsetChangedListener(this);
         metaBarLinearLayout = (LinearLayout) mRootView.findViewById(R.id.meta_bar);
-        mTitleLine = (TitleLineView) mRootView.findViewById(R.id.toolbar_header_view);
+        mTitleLine = (LinearLayout) mRootView.findViewById(R.id.toolbar_header_view);
         mCollapsingToolbar = (CollapsingToolbarLayout) mRootView.findViewById(R.id
                 .collapsing_toolbar);
         mDrawInsetsFrameLayout = (DrawInsetsFrameLayout)
