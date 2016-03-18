@@ -65,6 +65,9 @@ public class ArticleDetailFragment extends Fragment implements
     LinearLayout mTitleLine;
     AppBarLayout appBarLayout;
 
+    TextView titleView ;
+    TextView bylineView;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -136,9 +139,13 @@ public class ArticleDetailFragment extends Fragment implements
         mRootView.findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("Checkout this article\n");
+                sb.append(titleView.getText()+"\n");
+                sb.append("#"+getString(R.string.app_name));
                 startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(getActivity())
                         .setType("text/plain")
-                        .setText("Some sample text")
+                        .setText(sb.toString())
                         .getIntent(), getString(R.string.action_share)));
             }
         });
@@ -187,8 +194,8 @@ public class ArticleDetailFragment extends Fragment implements
             return;
         }
 
-        TextView titleView = (TextView) mRootView.findViewById(R.id.article_title);
-        TextView bylineView = (TextView) mRootView.findViewById(R.id.article_byline);
+         titleView = (TextView) mRootView.findViewById(R.id.article_title);
+         bylineView = (TextView) mRootView.findViewById(R.id.article_byline);
 
         TextView toolbarTitleView = (TextView) mRootView.findViewById(R.id.header_view_title);
         TextView toolbarBylineView = (TextView) mRootView.findViewById(R.id.header_view_sub_title);
