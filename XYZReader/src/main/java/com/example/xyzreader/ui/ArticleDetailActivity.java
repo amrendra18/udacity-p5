@@ -20,6 +20,7 @@ import android.view.WindowInsets;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
+import com.example.xyzreader.utils.Debug;
 
 /**
  * An activity representing a single Article detail screen, letting you swipe between articles.
@@ -78,7 +79,6 @@ public class ArticleDetailActivity extends AppCompatActivity
 
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
             }
         });
 
@@ -182,5 +182,9 @@ public class ArticleDetailActivity extends AppCompatActivity
         public int getCount() {
             return (mCursor != null) ? mCursor.getCount() : 0;
         }
+    }
+
+    public void setUpButtonVisibility(int visible) {
+        mUpButtonContainer.setVisibility(visible);
     }
 }

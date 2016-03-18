@@ -1,5 +1,6 @@
 package com.example.xyzreader.ui;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.Intent;
@@ -11,6 +12,8 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.graphics.Palette;
 import android.text.Html;
@@ -22,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -36,7 +40,7 @@ import com.example.xyzreader.data.ArticleLoader;
  * tablets) or a {@link ArticleDetailActivity} on handsets.
  */
 public class ArticleDetailFragment extends Fragment implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>, AppBarLayout.OnOffsetChangedListener {
     private static final String TAG = "ArticleDetailFragment";
 
     public static final String ARG_ITEM_ID = "item_id";
@@ -46,7 +50,6 @@ public class ArticleDetailFragment extends Fragment implements
     private long mItemId;
     private View mRootView;
     private int mMutedColor = 0xFF333333;
-    private ObservableScrollView mScrollView;
     private DrawInsetsFrameLayout mDrawInsetsFrameLayout;
     private ColorDrawable mStatusBarColorDrawable;
 
@@ -56,6 +59,11 @@ public class ArticleDetailFragment extends Fragment implements
     private int mScrollY;
     private boolean mIsCard = false;
     private int mStatusBarFullOpacityBottom;
+
+    LinearLayout metaBarLinearLayout;
+    CollapsingToolbarLayout mCollapsingToolbar;
+    TitleLineView mTitleLine;
+    AppBarLayout appBarLayout;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -103,8 +111,14 @@ public class ArticleDetailFragment extends Fragment implements
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
+        appBarLayout = (AppBarLayout) mRootView.findViewById(R.id.app_bar_layout);
+        appBarLayout.addOnOffsetChangedListener(this);
+        metaBarLinearLayout = (LinearLayout) mRootView.findViewById(R.id.meta_bar);
+        mTitleLine = (TitleLineView) mRootView.findViewById(R.id.toolbar_header_view);
+        mCollapsingToolbar = (CollapsingToolbarLayout) mRootView.findViewById(R.id
+                .collapsing_toolbar);
         mDrawInsetsFrameLayout = (DrawInsetsFrameLayout)
                 mRootView.findViewById(R.id.draw_insets_frame_layout);
         mDrawInsetsFrameLayout.setOnInsetsCallback(new DrawInsetsFrameLayout.OnInsetsCallback() {
@@ -113,17 +127,6 @@ public class ArticleDetailFragment extends Fragment implements
                 mTopInset = insets.top;
             }
         });
-
-/*        mScrollView = (ObservableScrollView) mRootView.findViewById(R.id.scrollview);
-        mScrollView.setCallbacks(new ObservableScrollView.Callbacks() {
-            @Override
-            public void onScrollChanged() {
-                mScrollY = mScrollView.getScrollY();
-                getActivityCast().onUpButtonFloorChanged(mItemId, ArticleDetailFragment.this);
-                mPhotoContainerView.setTranslationY((int) (mScrollY - mScrollY / PARALLAX_FACTOR));
-                updateStatusBar();
-            }
-        });*/
 
         mPhotoView = (ImageView) mRootView.findViewById(R.id.photo);
         mPhotoContainerView = mRootView.findViewById(R.id.collapsing_toolbar);
@@ -158,6 +161,11 @@ public class ArticleDetailFragment extends Fragment implements
         }
         mStatusBarColorDrawable.setColor(color);
         mDrawInsetsFrameLayout.setInsetBackground(mStatusBarColorDrawable);
+
+        mCollapsingToolbar.setBackgroundColor(mMutedColor);
+        mCollapsingToolbar.setStatusBarScrimColor(mMutedColor);
+        mCollapsingToolbar.setContentScrimColor(mMutedColor);
+
     }
 
     static float progress(float v, float min, float max) {
@@ -232,7 +240,7 @@ public class ArticleDetailFragment extends Fragment implements
         } else {
             mRootView.setVisibility(View.GONE);
             titleView.setText("N/A");
-            bylineView.setText("N/A" );
+            bylineView.setText("N/A");
             bodyView.setText("N/A");
         }
     }
@@ -276,5 +284,42 @@ public class ArticleDetailFragment extends Fragment implements
         return mIsCard
                 ? (int) mPhotoContainerView.getTranslationY() + mPhotoView.getHeight() - mScrollY
                 : mPhotoView.getHeight() - mScrollY;
+    }
+
+    private boolean isToolbarShown = false;
+
+    @Override
+    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+        int maxScroll = appBarLayout.getTotalScrollRange();
+        float percentage = (float) Math.abs(verticalOffset) / (float) maxScroll;
+        if (percentage >= 1f && isToolbarShown) {
+            hideToolbar();
+        } else if (percentage < 1f && !isToolbarShown) {
+            showToolbar();
+        }
+    }
+
+    private void showToolbar() {
+        if (!isToolbarShown) {
+            mTitleLine.setVisibility(View.INVISIBLE);
+            metaBarLinearLayout.setVisibility(View.VISIBLE);
+            Activity activity = getActivity();
+            if (activity instanceof ArticleDetailActivity) {
+                ((ArticleDetailActivity) getActivity()).setUpButtonVisibility(View.VISIBLE);
+            }
+            isToolbarShown = true;
+        }
+    }
+
+    private void hideToolbar() {
+        if (isToolbarShown) {
+            mTitleLine.setVisibility(View.VISIBLE);
+            metaBarLinearLayout.setVisibility(View.INVISIBLE);
+            Activity activity = getActivity();
+            if (activity instanceof ArticleDetailActivity) {
+                ((ArticleDetailActivity) getActivity()).setUpButtonVisibility(View.INVISIBLE);
+            }
+            isToolbarShown = false;
+        }
     }
 }
