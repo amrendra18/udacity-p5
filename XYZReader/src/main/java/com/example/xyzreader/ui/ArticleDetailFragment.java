@@ -200,10 +200,6 @@ public class ArticleDetailFragment extends Fragment implements
             bodyView.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY)));
 
             Glide.with(getActivity())
-                    .load(mCursor.getString(ArticleLoader.Query.THUMB_URL))
-                    .into(mPhotoView);
-
-            Glide.with(getActivity())
                     .load(mCursor.getString(ArticleLoader.Query.PHOTO_URL)).asBitmap()
                     .listener(new RequestListener<String, Bitmap>() {
                         @Override

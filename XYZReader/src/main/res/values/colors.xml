@@ -311,5 +311,5 @@
     <color name="theme_accent">@color/colorAccent</color>
     <color name="ltgray">@color/colorSecondaryText</color>
 
-    <color name="photo_placeholder">@color/orange_50</color>
+    <color name="photo_placeholder">@color/colorPrimary</color>
 </resources>

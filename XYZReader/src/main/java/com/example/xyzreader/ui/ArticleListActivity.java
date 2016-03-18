@@ -131,14 +131,12 @@ public class ArticleListActivity extends AppCompatActivity {
 
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            Debug.c();
             showRefreshing();
             return ArticleLoader.newAllArticlesInstance(ArticleListActivity.this);
         }
 
         @Override
         public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-            Debug.c();
             Adapter adapter = new Adapter(cursor);
             adapter.setHasStableIds(true);
             mRecyclerView.setAdapter(adapter);
@@ -151,7 +149,6 @@ public class ArticleListActivity extends AppCompatActivity {
 
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
-            Debug.c();
             mRecyclerView.setAdapter(null);
         }
     };
@@ -203,13 +200,11 @@ public class ArticleListActivity extends AppCompatActivity {
                     .listener(new RequestListener<String, Bitmap>() {
                         @Override
                         public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
-                            Debug.c();
                             return false;
                         }
 
                         @Override
                         public boolean onResourceReady(final Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                            Debug.c();
                             if (resource != null) {
                                 Palette.from(resource).generate(
                                         new Palette.PaletteAsyncListener() {
