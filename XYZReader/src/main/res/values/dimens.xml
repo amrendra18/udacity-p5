@@ -24,7 +24,7 @@
 
     <!-- detail article -->
     <dimen name="maxwidth_layout_elvevation">2dp</dimen>
-    <dimen name="maxwidth_layout_padding">12dp</dimen>
+    <dimen name="maxwidth_layout_padding">16dp</dimen>
 
     <dimen name="fab_elevation">2dp</dimen>
     <dimen name="fav_border_width">0dp</dimen>
