@@ -19,8 +19,8 @@
 
     <!-- toolbar -->
     <item name="image_parallax_multiplier" format="float" type="fraction">0.6</item>
-    <dimen name="toolbar_height">100dp</dimen>
-    <dimen name="title_padding_top">10dp</dimen>
+    <dimen name="toolbar_height">120dp</dimen>
+    <dimen name="title_padding_top">16dp</dimen>
 
     <!-- detail article -->
     <dimen name="maxwidth_layout_elvevation">2dp</dimen>

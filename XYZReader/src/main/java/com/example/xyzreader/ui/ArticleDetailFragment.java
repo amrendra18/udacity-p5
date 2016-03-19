@@ -236,9 +236,9 @@ public class ArticleDetailFragment extends Fragment implements
                             mCursor.getLong(ArticleLoader.Query.PUBLISHED_DATE),
                             System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
                             DateUtils.FORMAT_ABBREV_ALL).toString()
-                            + " by <font color='#ffffff'>"
+                            + " by <i><b>"
                             + mCursor.getString(ArticleLoader.Query.AUTHOR)
-                            + "</font>");
+                            + "</b></i>");
             titleView.setText(title);
             bylineView.setText(byline);
             toolbarTitleView.setText(title);
