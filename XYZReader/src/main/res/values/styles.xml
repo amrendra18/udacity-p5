@@ -33,6 +33,14 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="ActionBar.ThemeOverlay" parent="">
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="colorControlNormal">@color/white</item>
+        <item name="colorControlHighlight">@color/grey_800</item>
+    </style>
+
+    <style name="ActionBar.PopupThemeOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
     <style name="TransparentText" parent="@android:style/TextAppearance">

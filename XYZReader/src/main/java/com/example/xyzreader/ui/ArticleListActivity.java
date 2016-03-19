@@ -9,13 +9,17 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -43,6 +47,7 @@ public class ArticleListActivity extends AppCompatActivity {
     private Toolbar mToolbar;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
+    CoordinatorLayout mCorCoordinatorLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +55,14 @@ public class ArticleListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_article_list);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayShowTitleEnabled(false);
+        }
 
+        mCorCoordinatorLayout = (CoordinatorLayout) findViewById(R.id
+                .activity_article_list_coordinator_layout);
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimaryDark);
         mSwipeRefreshLayout.setProgressViewOffset(true, 200, 500);
@@ -74,6 +86,8 @@ public class ArticleListActivity extends AppCompatActivity {
         super.onStart();
         registerReceiver(mRefreshingReceiver,
                 new IntentFilter(UpdaterService.BROADCAST_ACTION_STATE_CHANGE));
+        registerReceiver(mRefreshingReceiver,
+                new IntentFilter(UpdaterService.BROADCAST_DEVICE_NOT_ONLINE));
     }
 
     @Override
@@ -93,10 +107,21 @@ public class ArticleListActivity extends AppCompatActivity {
     private BroadcastReceiver mRefreshingReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (UpdaterService.BROADCAST_ACTION_STATE_CHANGE.equals(intent.getAction())) {
-                mIsRefreshing = intent.getBooleanExtra(UpdaterService.EXTRA_REFRESHING, false);
-                updateRefreshingUI();
+            if (null != intent) {
+                String action = intent.getAction();
+                Debug.e("action : " + action, false);
+                if (null != action) {
+                    if (action.equals(UpdaterService.BROADCAST_ACTION_STATE_CHANGE)) {
+                        mIsRefreshing = intent.getBooleanExtra(UpdaterService.EXTRA_REFRESHING, false);
+                        updateRefreshingUI();
+                    } else if (action.equals(UpdaterService.BROADCAST_DEVICE_NOT_ONLINE)) {
+                        Debug.c();
+                        Debug.showSnackbarLong(mCorCoordinatorLayout, getString(R.string
+                                .not_online));
+                    }
+                }
             }
+
         }
     };
 
@@ -253,6 +278,26 @@ public class ArticleListActivity extends AppCompatActivity {
             titleView = (TextView) view.findViewById(R.id.article_title);
             subtitleView = (TextView) view.findViewById(R.id.article_subtitle);
             cardView = (LinearLayout) view.findViewById(R.id.article_card);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        Debug.c();
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.refresh:
+                Debug.c();
+                refresh();
+                return true;
+            default:
+                return false;
         }
     }
 }
