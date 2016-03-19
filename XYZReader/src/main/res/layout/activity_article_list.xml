@@ -10,7 +10,7 @@
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="8dp"
+        android:elevation="@dimen/app_bar_elvevation"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.v7.widget.Toolbar
@@ -18,15 +18,17 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             android:layout_gravity="bottom"
+            android:layout_marginEnd="@dimen/list_toolbar_side_margin"
             android:layout_marginLeft="@dimen/list_toolbar_side_margin"
             android:layout_marginRight="@dimen/list_toolbar_side_margin"
+            android:layout_marginStart="@dimen/list_toolbar_side_margin"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/app_name"
-                android:paddingTop="8dp"
+                android:paddingTop="@dimen/logo_image_padding"
                 android:src="@drawable/logo"/>
 
         </android.support.v7.widget.Toolbar>
@@ -36,7 +38,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="@dimen/main_frame_padding_vertical"
         android:paddingTop="?actionBarSize">
 
 
@@ -51,14 +53,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
-                android:paddingBottom="28dp"
                 android:paddingLeft="@dimen/list_side_margin"
+                android:paddingStart="@dimen/list_side_margin"
                 android:paddingRight="@dimen/list_side_margin"
+                android:paddingEnd="@dimen/list_side_margin"
+                android:paddingBottom="@dimen/list_item_margin"
                 android:scrollbarStyle="outsideOverlay"/>
 
         </android.support.v4.widget.SwipeRefreshLayout>
-
     </FrameLayout>
-
-
 </android.support.design.widget.CoordinatorLayout>

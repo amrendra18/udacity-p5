@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingTop="10dp">
+    android:paddingTop="@dimen/title_padding_top">
 
     <TextView
         android:id="@+id/header_view_title"
@@ -14,7 +14,7 @@
         android:fontFamily="sans-serif-condensed"
         android:lineSpacingMultiplier="0.9"
         android:paddingBottom="@dimen/detail_metabar_title_bottom_padding"
-        android:textColor="#fff"
+        android:textColor="@color/white"
         android:textSize="@dimen/detail_title_text_size"
         android:textStyle="bold"/>
 
@@ -23,6 +23,6 @@
         style="?android:attr/textAppearanceSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#8fff"/>
+        android:textColor="@color/grey_300"/>
 
 </LinearLayout>
