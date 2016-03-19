@@ -322,7 +322,7 @@ public class ArticleDetailFragment extends Fragment implements
             metaBarLinearLayout.setVisibility(View.INVISIBLE);
             Activity activity = getActivity();
             if (activity instanceof ArticleDetailActivity) {
-                ((ArticleDetailActivity) getActivity()).setUpButtonVisibility(View.INVISIBLE);
+                ((ArticleDetailActivity) getActivity()).setUpButtonVisibility(View.GONE);
             }
             isToolbarShown = false;
         }
