@@ -122,12 +122,15 @@ public class ArticleDetailFragment extends Fragment implements
                              Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
         appBarLayout = (AppBarLayout) mRootView.findViewById(R.id.app_bar_layout);
-        appBarLayout.addOnOffsetChangedListener(this);
+
         metaBarLinearLayout = (LinearLayout) mRootView.findViewById(R.id.meta_bar);
         mTitleLine = (LinearLayout) mRootView.findViewById(R.id.toolbar_header_view);
         mCollapsingToolbar = (CollapsingToolbarLayout) mRootView.findViewById(R.id
                 .collapsing_toolbar);
 
+        if (mTitleLine != null) {
+            appBarLayout.addOnOffsetChangedListener(this);
+        }
         shareButton = (FloatingActionButton) mRootView.findViewById(R.id.share_fab);
         mDrawInsetsFrameLayout = (DrawInsetsFrameLayout)
                 mRootView.findViewById(R.id.draw_insets_frame_layout);
@@ -179,14 +182,18 @@ public class ArticleDetailFragment extends Fragment implements
     }
 
     private void setCollapsingToolbarColor(int color) {
-        mCollapsingToolbar.setBackgroundColor(color);
-        mCollapsingToolbar.setStatusBarScrimColor(color);
-        mCollapsingToolbar.setContentScrimColor(color);
+        if (mCollapsingToolbar != null) {
+            mCollapsingToolbar.setBackgroundColor(color);
+            mCollapsingToolbar.setStatusBarScrimColor(color);
+            mCollapsingToolbar.setContentScrimColor(color);
+        }
     }
 
     private void setToolbarTitlesColor(int color) {
-        toolbarBylineView.setTextColor(color);
-        toolbarTitleView.setTextColor(color);
+        if (toolbarBylineView != null) {
+            toolbarBylineView.setTextColor(color);
+            toolbarTitleView.setTextColor(color);
+        }
     }
 
     private void setMetaTitlesColor(int color) {
@@ -241,8 +248,10 @@ public class ArticleDetailFragment extends Fragment implements
                             + "</b></i>");
             titleView.setText(title);
             bylineView.setText(byline);
-            toolbarTitleView.setText(title);
-            toolbarBylineView.setText(byline);
+            if (toolbarTitleView != null) {
+                toolbarTitleView.setText(title);
+                toolbarBylineView.setText(byline);
+            }
             bodyView.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY)));
 
             Glide.with(getActivity())
