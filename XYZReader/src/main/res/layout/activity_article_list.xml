@@ -10,8 +10,7 @@
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="@dimen/app_bar_elvevation"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:elevation="@dimen/app_bar_elvevation">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -22,7 +21,7 @@
             android:layout_marginLeft="@dimen/list_toolbar_side_margin"
             android:layout_marginRight="@dimen/list_toolbar_side_margin"
             android:layout_marginStart="@dimen/list_toolbar_side_margin"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+            app:theme="@style/ActionBar.ThemeOverlay">
 
             <ImageView
                 android:layout_width="wrap_content"
