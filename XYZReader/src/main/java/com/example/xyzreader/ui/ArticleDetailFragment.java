@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -13,6 +14,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.graphics.Palette;
 import android.text.Html;
@@ -64,8 +66,12 @@ public class ArticleDetailFragment extends Fragment implements
     LinearLayout mTitleLine;
     AppBarLayout appBarLayout;
 
-    TextView titleView ;
+    TextView titleView;
     TextView bylineView;
+    TextView toolbarTitleView;
+    TextView toolbarBylineView;
+
+    FloatingActionButton shareButton;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -121,6 +127,8 @@ public class ArticleDetailFragment extends Fragment implements
         mTitleLine = (LinearLayout) mRootView.findViewById(R.id.toolbar_header_view);
         mCollapsingToolbar = (CollapsingToolbarLayout) mRootView.findViewById(R.id
                 .collapsing_toolbar);
+
+        shareButton = (FloatingActionButton) mRootView.findViewById(R.id.share_fab);
         mDrawInsetsFrameLayout = (DrawInsetsFrameLayout)
                 mRootView.findViewById(R.id.draw_insets_frame_layout);
         mDrawInsetsFrameLayout.setOnInsetsCallback(new DrawInsetsFrameLayout.OnInsetsCallback() {
@@ -140,8 +148,8 @@ public class ArticleDetailFragment extends Fragment implements
             public void onClick(View view) {
                 StringBuilder sb = new StringBuilder();
                 sb.append("Checkout this article\n");
-                sb.append(titleView.getText()+"\n");
-                sb.append("#"+getString(R.string.app_name));
+                sb.append(titleView.getText() + "\n");
+                sb.append("#" + getString(R.string.app_name));
                 startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(getActivity())
                         .setType("text/plain")
                         .setText(sb.toString())
@@ -167,11 +175,27 @@ public class ArticleDetailFragment extends Fragment implements
         }
         mStatusBarColorDrawable.setColor(color);
         mDrawInsetsFrameLayout.setInsetBackground(mStatusBarColorDrawable);
+        setCollapsingToolbarColor(mMutedColor);
+    }
 
-        mCollapsingToolbar.setBackgroundColor(mMutedColor);
-        mCollapsingToolbar.setStatusBarScrimColor(mMutedColor);
-        mCollapsingToolbar.setContentScrimColor(mMutedColor);
+    private void setCollapsingToolbarColor(int color) {
+        mCollapsingToolbar.setBackgroundColor(color);
+        mCollapsingToolbar.setStatusBarScrimColor(color);
+        mCollapsingToolbar.setContentScrimColor(color);
+    }
 
+    private void setToolbarTitlesColor(int color) {
+        toolbarBylineView.setTextColor(color);
+        toolbarTitleView.setTextColor(color);
+    }
+
+    private void setMetaTitlesColor(int color) {
+        bylineView.setTextColor(color);
+        titleView.setTextColor(color);
+    }
+
+    private void setMetaBarLinearLayoutColor(int color) {
+        metaBarLinearLayout.setBackgroundColor(color);
     }
 
     static float progress(float v, float min, float max) {
@@ -193,11 +217,11 @@ public class ArticleDetailFragment extends Fragment implements
             return;
         }
 
-         titleView = (TextView) mRootView.findViewById(R.id.article_title);
-         bylineView = (TextView) mRootView.findViewById(R.id.article_byline);
+        titleView = (TextView) mRootView.findViewById(R.id.article_title);
+        bylineView = (TextView) mRootView.findViewById(R.id.article_byline);
 
-        TextView toolbarTitleView = (TextView) mRootView.findViewById(R.id.header_view_title);
-        TextView toolbarBylineView = (TextView) mRootView.findViewById(R.id.header_view_sub_title);
+        toolbarTitleView = (TextView) mRootView.findViewById(R.id.header_view_title);
+        toolbarBylineView = (TextView) mRootView.findViewById(R.id.header_view_sub_title);
 
         bylineView.setMovementMethod(new LinkMovementMethod());
         TextView bodyView = (TextView) mRootView.findViewById(R.id.article_body);
@@ -232,11 +256,38 @@ public class ArticleDetailFragment extends Fragment implements
                         @Override
                         public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
                             if (resource != null) {
-                                Palette p = Palette.generate(resource, 12);
-                                mMutedColor = p.getDarkMutedColor(0xFF333333);
-                                mRootView.findViewById(R.id.meta_bar)
-                                        .setBackgroundColor(mMutedColor);
-                                updateStatusBar();
+                                Palette.from(resource).generate(
+                                        new Palette.PaletteAsyncListener() {
+                                            @Override
+                                            public void onGenerated(Palette palette) {
+                                                Palette.Swatch darkVibrantSwatch = palette.getDarkVibrantSwatch();
+                                                Palette.Swatch darkMutedSwatch = palette.getDarkMutedSwatch();
+                                                Palette.Swatch lightVibrantSwatch = palette.getLightVibrantSwatch();
+                                                Palette.Swatch lightMutedSwatch = palette.getLightMutedSwatch();
+
+                                                Palette.Swatch backgroundAndContentColors = darkVibrantSwatch;
+                                                if (backgroundAndContentColors == null) {
+                                                    backgroundAndContentColors = darkMutedSwatch;
+                                                }
+                                                Palette.Swatch titleAndFabColors = lightVibrantSwatch;
+
+                                                if (titleAndFabColors == null) {
+                                                    titleAndFabColors = lightMutedSwatch;
+                                                }
+
+                                                if (backgroundAndContentColors != null) {
+                                                    mMutedColor = backgroundAndContentColors
+                                                            .getRgb();
+
+                                                } else {
+                                                    mMutedColor = palette.getDarkMutedColor
+                                                            (0xFF333333);
+                                                }
+                                                updateStatusBar();
+                                                setDarkColorWork(backgroundAndContentColors);
+                                                setLightColorWork(titleAndFabColors);
+                                            }
+                                        });
                             }
                             return false;
                         }
@@ -247,6 +298,24 @@ public class ArticleDetailFragment extends Fragment implements
             titleView.setText("N/A");
             bylineView.setText("N/A");
             bodyView.setText("N/A");
+        }
+    }
+
+    private void setDarkColorWork(Palette.Swatch swatch) {
+        if (swatch != null) {
+            int color = swatch.getRgb();
+            shareButton.setBackgroundTintList(ColorStateList.valueOf(color));
+            setCollapsingToolbarColor(color);
+            setMetaBarLinearLayoutColor(color);
+        }
+    }
+
+    private void setLightColorWork(Palette.Swatch swatch) {
+        if (swatch != null) {
+            int color = swatch.getRgb();
+            shareButton.setRippleColor(color);
+            setToolbarTitlesColor(color);
+            setMetaTitlesColor(color);
         }
     }
 
