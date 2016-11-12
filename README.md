@@ -14,7 +14,3 @@ App demo [here](https://www.youtube.com/watch?v=K3mmfqBo8KA)
 - [Butterknife](http://jakewharton.github.io/butterknife/) [For binding]
 - [Retrofit](http://square.github.io/retrofit/) [For rest api calls]
 - [Gson](http://mvnrepository.com/artifact/com.squareup.retrofit/converter-gson/2.0.0-beta1) [For json handling]
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/amrendra18/udacity-p5/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
